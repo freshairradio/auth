@@ -1,0 +1,47 @@
+html,
+body {
+  margin: 0px;
+  color: white;
+  font-size: 21px;
+}
+body {
+  background: #1a202c;
+}
+section {
+  position: relative;
+  margin: 0px;
+  display: grid;
+  grid-gap: 10px;
+  grid-template-columns: 1fr minmax(auto, 800px) 1fr;
+  justify-content: center;
+}
+section[small] {
+  grid-template-columns: 1fr minmax(auto, 600px) 1fr;
+}
+section > * {
+  grid-column: 2;
+}
+section > .grid {
+  display: grid;
+  grid-gap: 30px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  justify-content: center;
+}
+.react-select__control,
+.react-select__menu {
+  background: #383e48 !important;
+}
+.react-select-container * {
+  color: white !important;
+}
+.slate * {
+  font-size: 21px;
+  line-height: 1.45;
+}
+button {
+  text-transform: lowercase;
+}
+html,
+body {
+  min-height: 100%;
+}

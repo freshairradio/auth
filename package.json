@@ -1,0 +1,37 @@
+{
+  "dependencies": {
+    "@chakra-ui/core": "^0.7.0",
+    "@emotion/core": "^10.0.28",
+    "@emotion/styled": "^10.0.27",
+    "@sentry/browser": "^5.15.5",
+    "emotion": "^10.0.27",
+    "emotion-theming": "^10.0.27",
+    "formik": "^2.1.4",
+    "gotrue-js": "^0.9.25",
+    "netlify-cms": "^2.10.48",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-dropzone": "^11.0.1",
+    "react-dropzone-uploader": "^2.11.0",
+    "react-router-dom": "^5.1.2",
+    "react-select": "^3.1.0",
+    "slate": "^0.58.0",
+    "slate-history": "^0.58.0",
+    "slate-react": "^0.58.0",
+    "styled-components": "^5.1.0",
+    "@penalosa/epsilon": "^1.0.5"
+  },
+  "name": "netlifycms",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "browserslist": [
+    ">2%"
+  ]
+}
