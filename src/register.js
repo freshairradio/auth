@@ -56,7 +56,13 @@ export const Register = ({ onAuth }) => {
           'Content-Type': 'application/json; charset=utf-8'
         },
         body: JSON.stringify({
-          content: btoa(YAML.stringify({ name, email })),
+          content: btoa(
+            YAML.stringify({
+              name,
+              email,
+              ident: name.toLowerCase().replace(/[^a-z]+/g, '-')
+            })
+          ),
           encoding: 'base64'
         }),
         method: 'POST'
