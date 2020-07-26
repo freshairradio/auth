@@ -3,6 +3,7 @@
     "@chakra-ui/core": "^0.7.0",
     "@emotion/core": "^10.0.28",
     "@emotion/styled": "^10.0.27",
+    "@penalosa/epsilon": "^1.0.5",
     "@sentry/browser": "^5.15.5",
     "emotion": "^10.0.27",
     "emotion-theming": "^10.0.27",
@@ -19,7 +20,7 @@
     "slate-history": "^0.58.0",
     "slate-react": "^0.58.0",
     "styled-components": "^5.1.0",
-    "@penalosa/epsilon": "^1.0.5"
+    "yaml": "^1.10.0"
   },
   "name": "netlifycms",
   "version": "1.0.0",

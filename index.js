@@ -122,7 +122,13 @@ const App = () => {
           </Route>
           <Route path="/auth/:app?/register">
             <section small="true">
-              <Register />
+              <Register
+                onAuth={(token) =>
+                  app && app != 'login' && app != 'register'
+                    ? (window.location.href = `https://${app}.freshair.radio/identify/${token}`)
+                    : history.push('/me')
+                }
+              />
             </section>
           </Route>
         </>

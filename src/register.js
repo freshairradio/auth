@@ -5,6 +5,7 @@ import { Card } from './card'
 import { WideButton } from './wide_button'
 import { OptionLink } from './option_link'
 import * as Sentry from '@sentry/browser'
+import YAML from 'yaml'
 Sentry.init({
   dsn:
     'https://abdf5817a9234f789b48b160f6a5ff1b@o361145.ingest.sentry.io/3783234'
@@ -36,7 +37,7 @@ import {
   Collapse,
   Input
 } from '@chakra-ui/core'
-export const Register = () => {
+export const Register = ({ onAuth }) => {
   const { app } = useParams()
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
@@ -46,6 +47,85 @@ export const Register = () => {
   const [eError, setEError] = useState(false)
   const [unknownError, setUnknownError] = useState(false)
   const history = useHistory()
+  const doCreateAuthor = async (token, { name, email }) => {
+    const blob = await fetch(
+      'https://gateway.freshair.radio/github/git/blobs',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          content: btoa(YAML.stringify({ name, email })),
+          encoding: 'base64'
+        }),
+        method: 'POST'
+      }
+    ).then((r) => r.json())
+    const master = await fetch(
+      'https://gateway.freshair.radio/github/branches/master',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        }
+      }
+    ).then((r) => r.json())
+    const tree = await fetch(
+      'https://gateway.freshair.radio/github/git/trees',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          base_tree: master.commit.sha,
+          tree: [
+            {
+              path: `content/authors/${name
+                .toLowerCase()
+                .replace(/[^a-z]+/g, '-')}.yml`,
+              mode: '100644',
+              type: 'blob',
+              sha: blob.sha
+            }
+          ]
+        }),
+        method: 'POST'
+      }
+    ).then((r) => r.json())
+    const commit = await fetch(
+      'https://gateway.freshair.radio/github/git/commits',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({
+          message: `Create Author “${name}”`,
+          tree: tree.sha,
+          parents: [master.commit.sha],
+          author: {
+            name: name,
+            email: email,
+            date: new Date().toISOString()
+          }
+        }),
+        method: 'POST'
+      }
+    ).then((r) => r.json())
+    const toMaster = await fetch(
+      'https://gateway.freshair.radio/github/git/refs/heads/master',
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({ sha: commit.sha, force: false }),
+        method: 'PATCH'
+      }
+    )
+  }
   const doLogin = async () => {
     setRegistering(true)
     Sentry.configureScope((scope) => scope.setUser({ email: email }))
@@ -92,7 +172,6 @@ export const Register = () => {
       method: 'POST',
       body: form
     })
-    setRegistering(false)
     if (
       !fetched.ok &&
       fetched.headers.get('Content-Type') != 'application/json'
@@ -109,9 +188,11 @@ export const Register = () => {
 
       return
     }
-
+    await doCreateAuthor(json.access_token, { name, email })
     localStorage.setItem('token', json.access_token)
-    history.push('/shows')
+    setRegistering(false)
+
+    onAuth(json.access_token)
   }
   return (
     <Stack mb="50px">
