@@ -1,15 +1,15 @@
-import React, { useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-import faders from '../faders.png'
-import { Card } from './card'
-import { WideButton } from './wide_button'
-import { OptionLink } from './option_link'
-import * as Sentry from '@sentry/browser'
-import YAML from 'yaml'
+import React, { useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
+import faders from "../faders.png";
+import { Card } from "./card";
+import { WideButton } from "./wide_button";
+import { OptionLink } from "./option_link";
+import * as Sentry from "@sentry/browser";
+import YAML from "yaml";
 Sentry.init({
   dsn:
-    'https://abdf5817a9234f789b48b160f6a5ff1b@o361145.ingest.sentry.io/3783234'
-})
+    "https://abdf5817a9234f789b48b160f6a5ff1b@o361145.ingest.sentry.io/3783234"
+});
 import {
   ThemeProvider,
   CSSReset,
@@ -36,53 +36,53 @@ import {
   FormErrorMessage,
   Collapse,
   Input
-} from '@chakra-ui/core'
+} from "@chakra-ui/core";
 export const Register = ({ onAuth }) => {
-  const { app } = useParams()
-  const [email, setEmail] = useState('')
-  const [name, setName] = useState('')
-  const [password, setPassword] = useState('')
-  const [registering, setRegistering] = useState(false)
-  const [pwError, setPwError] = useState(false)
-  const [eError, setEError] = useState(false)
-  const [unknownError, setUnknownError] = useState(false)
-  const history = useHistory()
+  const { app } = useParams();
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
+  const [registering, setRegistering] = useState(false);
+  const [pwError, setPwError] = useState(false);
+  const [eError, setEError] = useState(false);
+  const [unknownError, setUnknownError] = useState(false);
+  const history = useHistory();
   const doCreateAuthor = async (token, { name, email }) => {
     const blob = await fetch(
-      'https://gateway.freshair.radio/github/git/blobs',
+      "https://gateway.freshair.radio/github/git/blobs",
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json; charset=utf-8'
+          "Content-Type": "application/json; charset=utf-8"
         },
         body: JSON.stringify({
           content: btoa(
             YAML.stringify({
               name,
               email,
-              ident: name.toLowerCase().replace(/[^a-z]+/g, '-')
+              ident: name.toLowerCase().replace(/[^a-z]+/g, "-")
             })
           ),
-          encoding: 'base64'
+          encoding: "base64"
         }),
-        method: 'POST'
+        method: "POST"
       }
-    ).then((r) => r.json())
+    ).then((r) => r.json());
     const master = await fetch(
-      'https://gateway.freshair.radio/github/branches/master',
+      "https://gateway.freshair.radio/github/branches/master",
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json; charset=utf-8'
+          "Content-Type": "application/json; charset=utf-8"
         }
       }
-    ).then((r) => r.json())
+    ).then((r) => r.json());
     const tree = await fetch(
-      'https://gateway.freshair.radio/github/git/trees',
+      "https://gateway.freshair.radio/github/git/trees",
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json; charset=utf-8'
+          "Content-Type": "application/json; charset=utf-8"
         },
         body: JSON.stringify({
           base_tree: master.commit.sha,
@@ -90,22 +90,22 @@ export const Register = ({ onAuth }) => {
             {
               path: `content/authors/${name
                 .toLowerCase()
-                .replace(/[^a-z]+/g, '-')}.yml`,
-              mode: '100644',
-              type: 'blob',
+                .replace(/[^a-z]+/g, "-")}.yml`,
+              mode: "100644",
+              type: "blob",
               sha: blob.sha
             }
           ]
         }),
-        method: 'POST'
+        method: "POST"
       }
-    ).then((r) => r.json())
+    ).then((r) => r.json());
     const commit = await fetch(
-      'https://gateway.freshair.radio/github/git/commits',
+      "https://gateway.freshair.radio/github/git/commits",
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json; charset=utf-8'
+          "Content-Type": "application/json; charset=utf-8"
         },
         body: JSON.stringify({
           message: `Create Author “${name}”`,
@@ -117,27 +117,27 @@ export const Register = ({ onAuth }) => {
             date: new Date().toISOString()
           }
         }),
-        method: 'POST'
+        method: "POST"
       }
-    ).then((r) => r.json())
+    ).then((r) => r.json());
     const toMaster = await fetch(
-      'https://gateway.freshair.radio/github/git/refs/heads/master',
+      "https://gateway.freshair.radio/github/git/refs/heads/master",
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json; charset=utf-8'
+          "Content-Type": "application/json; charset=utf-8"
         },
         body: JSON.stringify({ sha: commit.sha, force: false }),
-        method: 'PATCH'
+        method: "PATCH"
       }
-    )
-  }
+    );
+  };
   const doLogin = async () => {
-    setRegistering(true)
-    Sentry.configureScope((scope) => scope.setUser({ email: email }))
+    setRegistering(true);
+    Sentry.configureScope((scope) => scope.setUser({ email: email }));
 
     let fetched = await fetch(`https://identity.freshair.radio/signup`, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({
         email,
         password,
@@ -145,73 +145,67 @@ export const Register = ({ onAuth }) => {
           name
         }
       })
-    })
+    });
     if (
       !fetched.ok &&
-      fetched.headers.get('Content-Type') != 'application/json'
+      fetched.headers.get("Content-Type") != "application/json"
     ) {
-      Sentry.captureException(fetched)
-      setRegistering(false)
+      Sentry.captureException(fetched);
+      setRegistering(false);
 
-      return
+      return;
     }
-    let json = await fetched.json()
+    let json = await fetched.json();
     if (!fetched.ok) {
-      Sentry.captureException(json)
-      console.log(json)
-      if (json.error_description == 'Invalid Password') {
-        setPwError(true)
+      Sentry.captureException(json);
+      console.log(json);
+      if (json.error_description == "Invalid Password") {
+        setPwError(true);
       } else if (json.code == 400) {
-        setEError('That email is already in use')
+        setEError("That email is already in use");
       } else {
-        setUnknownError(true)
+        setUnknownError(true);
       }
-      setRegistering(false)
+      setRegistering(false);
 
-      return
+      return;
     }
-    let form = new FormData()
-    form.append('grant_type', 'password')
-    form.append('username', email)
-    form.append('password', password)
+    let form = new FormData();
+    form.append("grant_type", "password");
+    form.append("username", email);
+    form.append("password", password);
     fetched = await fetch(`https://identity.freshair.radio/token`, {
-      method: 'POST',
+      method: "POST",
       body: form
-    })
+    });
     if (
       !fetched.ok &&
-      fetched.headers.get('Content-Type') != 'application/json'
+      fetched.headers.get("Content-Type") != "application/json"
     ) {
-      Sentry.captureException(fetched)
-      return
+      Sentry.captureException(fetched);
+      return;
     }
-    json = await fetched.json()
+    json = await fetched.json();
     if (!fetched.ok) {
-      Sentry.captureException(json)
-      console.log(json)
+      Sentry.captureException(json);
+      console.log(json);
 
-      setUnknownError(true)
+      setUnknownError(true);
 
-      return
+      return;
     }
-    await doCreateAuthor(json.access_token, { name, email })
-    localStorage.setItem('token', json.access_token)
-    setRegistering(false)
+    localStorage.setItem("token", json.access_token);
+    setRegistering(false);
 
-    onAuth(json.access_token)
-  }
+    onAuth(json.access_token);
+  };
   return (
     <Stack mb="50px">
       <Card mt="100px">
         <Box>
           <Stack>
-            <Heading
-              fontFamily="Concourse T2"
-              fontWeight="100"
-              textAlign="center"
-            >
-              fresh<b style={{ fontWeight: 'bold' }}>air</b>
-            </Heading>
+            <img src="https://cdn.freshair.radio/logos/FreshairFullWhiteLogo.png" />
+
             {unknownError && (
               <Alert status="error">
                 <AlertIcon />
@@ -224,7 +218,7 @@ export const Register = ({ onAuth }) => {
               <Input
                 value={name}
                 onChange={(e) => {
-                  setName(e.target.value)
+                  setName(e.target.value);
                 }}
                 type="text"
                 id="name"
@@ -236,8 +230,8 @@ export const Register = ({ onAuth }) => {
               <Input
                 value={email}
                 onChange={(e) => {
-                  setEError(false)
-                  setEmail(e.target.value)
+                  setEError(false);
+                  setEmail(e.target.value);
                 }}
                 type="email"
                 id="email"
@@ -250,8 +244,8 @@ export const Register = ({ onAuth }) => {
               <Input
                 value={password}
                 onChange={(e) => {
-                  setPwError(false)
-                  setPassword(e.target.value)
+                  setPwError(false);
+                  setPassword(e.target.value);
                 }}
                 type="password"
                 id="password"
@@ -271,5 +265,5 @@ export const Register = ({ onAuth }) => {
         Already have an account?
       </OptionLink>
     </Stack>
-  )
-}
+  );
+};
